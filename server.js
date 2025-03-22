@@ -36,7 +36,7 @@ const swaggerOptions = {
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
-          ? 'https://your-render-url.onrender.com' 
+          ? 'https://week-3-4-30dx.onrender.com/' 
           : `http://localhost:${process.env.PORT}`,
       },
     ],
