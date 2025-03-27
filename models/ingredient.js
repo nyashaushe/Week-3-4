@@ -54,4 +54,9 @@ const ingredientSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Ingredient', ingredientSchema); 
+ingredientSchema.methods.updateIngredient = function(updateData) {
+  Object.assign(this, updateData);
+  return this.save();
+};
+
+module.exports = mongoose.model('Ingredient', ingredientSchema);

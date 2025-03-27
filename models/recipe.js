@@ -60,4 +60,9 @@ const recipeSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Recipe', recipeSchema); 
+recipeSchema.methods.updateRecipe = function(updateData) {
+  Object.assign(this, updateData);
+  return this.save();
+};
+
+module.exports = mongoose.model('Recipe', recipeSchema);

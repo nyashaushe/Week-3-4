@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Ingredient = require('../models/ingredient');
+const { ensureAuthenticated } = require('./auth');
 
 /**
  * @swagger
@@ -8,13 +9,15 @@ const Ingredient = require('../models/ingredient');
  *   get:
  *     summary: Get all ingredients
  *     tags: [Ingredients]
+ *     security:
+ *       - githubAuth: []
  *     responses:
  *       200:
  *         description: List of all ingredients
  *       500:
  *         description: Server error
  */
-router.get('/', async (req, res) => {
+router.get('/', ensureAuthenticated, async (req, res) => {
   try {
     const ingredients = await Ingredient.find();
     res.json(ingredients);
@@ -29,6 +32,8 @@ router.get('/', async (req, res) => {
  *   get:
  *     summary: Get an ingredient by ID
  *     tags: [Ingredients]
+ *     security:
+ *       - githubAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -43,7 +48,7 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', ensureAuthenticated, async (req, res) => {
   try {
     const ingredient = await Ingredient.findById(req.params.id);
     if (!ingredient) {
@@ -61,6 +66,8 @@ router.get('/:id', async (req, res) => {
  *   post:
  *     summary: Create a new ingredient
  *     tags: [Ingredients]
+ *     security:
+ *       - githubAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -81,7 +88,7 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post('/', async (req, res) => {
+router.post('/', ensureAuthenticated, async (req, res) => {
   try {
     const ingredient = new Ingredient(req.body);
     const newIngredient = await ingredient.save();
@@ -100,6 +107,8 @@ router.post('/', async (req, res) => {
  *   put:
  *     summary: Update an ingredient
  *     tags: [Ingredients]
+ *     security:
+ *       - githubAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -122,16 +131,15 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureAuthenticated, async (req, res) => {
   try {
     const ingredient = await Ingredient.findById(req.params.id);
     if (!ingredient) {
       return res.status(404).json({ message: 'Ingredient not found' });
     }
-    
-    Object.assign(ingredient, req.body);
-    const updatedIngredient = await ingredient.save();
-    res.json(updatedIngredient);
+
+    await ingredient.updateIngredient(req.body);
+    res.json(ingredient);
   } catch (err) {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ message: err.message });
@@ -146,6 +154,8 @@ router.put('/:id', async (req, res) => {
  *   delete:
  *     summary: Delete an ingredient
  *     tags: [Ingredients]
+ *     security:
+ *       - githubAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -160,7 +170,7 @@ router.put('/:id', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
   try {
     const ingredient = await Ingredient.findById(req.params.id);
     if (!ingredient) {
@@ -173,4 +183,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
