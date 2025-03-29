@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Ingredient = require('../models/ingredient');
 const { ensureAuthenticated } = require('./auth');
+const ingredientsController = require('../controllers/ingredientsController');
 
 /**
  * @swagger
@@ -17,14 +17,7 @@ const { ensureAuthenticated } = require('./auth');
  *       500:
  *         description: Server error
  */
-router.get('/', ensureAuthenticated, async (req, res) => {
-  try {
-    const ingredients = await Ingredient.find();
-    res.json(ingredients);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get('/', ensureAuthenticated, ingredientsController.getAllIngredients);
 
 /**
  * @swagger
@@ -48,17 +41,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findById(req.params.id);
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-    res.json(ingredient);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get('/:id', ensureAuthenticated, ingredientsController.getIngredientById);
 
 /**
  * @swagger
@@ -88,18 +71,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post('/', ensureAuthenticated, async (req, res) => {
-  try {
-    const ingredient = new Ingredient(req.body);
-    const newIngredient = await ingredient.save();
-    res.status(201).json(newIngredient);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ message: err.message });
-    }
-    res.status(500).json({ message: err.message });
-  }
-});
+router.post('/', ensureAuthenticated, ingredientsController.createIngredient);
 
 /**
  * @swagger
@@ -131,22 +103,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findById(req.params.id);
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-
-    await ingredient.updateIngredient(req.body);
-    res.json(ingredient);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ message: err.message });
-    }
-    res.status(500).json({ message: err.message });
-  }
-});
+router.put('/:id', ensureAuthenticated, ingredientsController.updateIngredient);
 
 /**
  * @swagger
@@ -170,17 +127,6 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.delete('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const ingredient = await Ingredient.findById(req.params.id);
-    if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
-    }
-    await Ingredient.deleteOne({ _id: req.params.id });
-    res.json({ message: 'Ingredient deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete('/:id', ensureAuthenticated, ingredientsController.deleteIngredient);
 
 module.exports = router;

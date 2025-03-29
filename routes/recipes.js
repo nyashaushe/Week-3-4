@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Recipe = require('../models/recipe');
 const { ensureAuthenticated } = require('./auth');
+const recipesController = require('../controllers/recipesController');
 
 /**
  * @swagger
@@ -17,14 +17,7 @@ const { ensureAuthenticated } = require('./auth');
  *       500:
  *         description: Server error
  */
-router.get('/', ensureAuthenticated, async (req, res) => {
-  try {
-    const recipes = await Recipe.find().populate('ingredients.ingredient');
-    res.json(recipes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get('/', ensureAuthenticated, recipesController.getAllRecipes);
 
 /**
  * @swagger
@@ -48,17 +41,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const recipe = await Recipe.findById(req.params.id).populate('ingredients.ingredient');
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-    res.json(recipe);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get('/:id', ensureAuthenticated, recipesController.getRecipeById);
 
 /**
  * @swagger
@@ -91,18 +74,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post('/', ensureAuthenticated, async (req, res) => {
-  try {
-    const recipe = new Recipe(req.body);
-    const newRecipe = await recipe.save();
-    res.status(201).json(newRecipe);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ message: err.message });
-    }
-    res.status(500).json({ message: err.message });
-  }
-});
+router.post('/', ensureAuthenticated, recipesController.createRecipe);
 
 /**
  * @swagger
@@ -134,22 +106,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const recipe = await Recipe.findById(req.params.id);
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-
-    await recipe.updateRecipe(req.body);
-    res.json(recipe);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ message: err.message });
-    }
-    res.status(500).json({ message: err.message });
-  }
-});
+router.put('/:id', ensureAuthenticated, recipesController.updateRecipe);
 
 /**
  * @swagger
@@ -173,17 +130,6 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.delete('/:id', ensureAuthenticated, async (req, res) => {
-  try {
-    const recipe = await Recipe.findById(req.params.id);
-    if (!recipe) {
-      return res.status(404).json({ message: 'Recipe not found' });
-    }
-    await Recipe.deleteOne({ _id: req.params.id });
-    res.json({ message: 'Recipe deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete('/:id', ensureAuthenticated, recipesController.deleteRecipe);
 
 module.exports = router;
