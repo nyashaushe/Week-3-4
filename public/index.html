@@ -10,36 +10,52 @@
 
     <div id="auth-status">
         <!-- Content will be loaded by JavaScript -->
-        <p>Loading user status...</p>
+        <!-- Content will be dynamically updated -->
+        <a href="/auth/github">Login with GitHub</a>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const authStatusDiv = document.getElementById('auth-status');
 
-            fetch('/api/user/me')
-                .then(response => {
-                    if (response.ok) {
-                        return response.json(); // User is logged in
+            try {
+                const response = await fetch('/auth/api/auth/status'); // Corrected endpoint path
+
+                if (!response.ok) {
+                    // If response is not OK (e.g., 401 Unauthorized), user is not logged in
+                    if (response.status === 401) {
+                         console.log('User not authenticated.');
+                         // Ensure login link is shown (it's the default HTML)
+                         authStatusDiv.innerHTML = '<a href="/auth/github">Login with GitHub</a>';
                     } else {
-                        // Assume not logged in if status is not OK (e.g., 401)
-                        throw new Error('Not authenticated'); 
+                        // Handle other potential errors
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                })
-                .then(data => {
-                    // User is logged in, display welcome message and logout link
-                    const username = data.username || 'User'; // Fallback if username isn't returned
+                    return; // Exit early if not logged in
+                }
+
+                const data = await response.json();
+
+                if (data.loggedIn && data.user) {
+                    // User is logged in
+                    const displayName = data.user.displayName || data.user.username || 'User'; // Prefer display name, fallback to username
                     authStatusDiv.innerHTML = `
-                        <p>Welcome, ${username}! 
-                           <a href="/auth/logout">Logout</a>
+                        <p>Welcome, ${displayName}!
+                           <a href="/logout">Logout</a>  
                         </p>
+                        <p><a href="/recipes.html">View Recipes</a></p> 
                     `;
-                })
-                .catch(error => {
-                    // User is not logged in or an error occurred, display login link
-                    console.log('User not authenticated or fetch error:', error.message);
-                    authStatusDiv.innerHTML = '<a href="/auth/github">Login with GitHub</a>';
-                });
+                } else {
+                     // Should not happen if response.ok is true, but handle defensively
+                     console.log('User data indicates not logged in, showing login link.');
+                     authStatusDiv.innerHTML = '<a href="/auth/github">Login with GitHub</a>';
+                }
+
+            } catch (error) {
+                // Network error or other fetch issue
+                console.error('Error fetching auth status:', error);
+                authStatusDiv.innerHTML = '<p>Error loading user status. <a href="/auth/github">Login with GitHub</a></p>';
+            }
         });
     </script>
 </body>

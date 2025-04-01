@@ -96,4 +96,65 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
+/**
+ * @swagger
+ * /api/auth/status:
+ *   get:
+ *     summary: Check user authentication status
+ *     tags: [Authentication]
+ *     description: Returns the logged-in user's information (if authenticated) or an indication that the user is not logged in.
+ *     responses:
+ *       200:
+ *         description: Authentication status retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 loggedIn:
+ *                   type: boolean
+ *                   description: Indicates if a user is currently logged in.
+ *                 user:
+ *                   type: object
+ *                   description: User profile information (present only if loggedIn is true).
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                       description: The user's GitHub username.
+ *                     displayName:
+ *                       type: string
+ *                       description: The user's display name from GitHub.
+ *                     # Add other relevant profile fields if needed
+ *               example:
+ *                 loggedIn: true
+ *                 user: { username: "octocat", displayName: "The Octocat" }
+ *       401:
+ *         description: User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 loggedIn:
+ *                   type: boolean
+ *                   example: false
+ */
+router.get('/api/auth/status', (req, res) => {
+  if (req.isAuthenticated()) {
+    // User is logged in, send back relevant user info
+    res.json({
+      loggedIn: true,
+      user: {
+        username: req.user.username, // Assuming passport stores profile here
+        displayName: req.user.displayName,
+        // Add other fields from req.user if needed
+      }
+    });
+  } else {
+    // User is not logged in
+    res.status(401).json({ loggedIn: false });
+  }
+});
+
+
 module.exports = router;
