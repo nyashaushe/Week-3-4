@@ -12,6 +12,9 @@ const { ensureAuthenticated } = require('./middleware/auth'); // Import middlewa
 
 const app = express(); // Ensure app initialization is here
 
+// Enable trusting proxy headers - Important for environments like Render
+app.set('trust proxy', 1); // Trust first proxy
+
 // Middleware
 app.use(cors());
 app.use(express.json());

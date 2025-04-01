@@ -22,7 +22,6 @@ if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET || !proce
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     callbackURL: process.env.GITHUB_CALLBACK_URL
-    // scope: ['user:email'] // Removed email scope request
   }, (accessToken, refreshToken, profile, done) => {
     // In a real app, you would find or create a user in your database here
     // For this example, we just pass the GitHub profile directly
