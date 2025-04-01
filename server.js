@@ -39,11 +39,13 @@ app.use(passport.session());
 // Passport serialization/deserialization (keep this here as it's global)
 passport.serializeUser((user, done) => {
   // In a real app, you might serialize just the user ID
+  console.log('[DEBUG] Serializing user:', JSON.stringify(user, null, 2)); // Added logging
   done(null, user);
 });
 
 passport.deserializeUser((obj, done) => {
   // In a real app, you might fetch the user from the database based on the ID
+  console.log('[DEBUG] Deserializing user:', JSON.stringify(obj, null, 2)); // Added logging
   done(null, obj);
 });
 

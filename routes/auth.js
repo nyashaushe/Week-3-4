@@ -26,6 +26,7 @@ if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET || !proce
   }, (accessToken, refreshToken, profile, done) => {
     // In a real app, you would find or create a user in your database here
     // For this example, we just pass the GitHub profile directly
+    console.log('[DEBUG] GitHub Strategy Callback: Profile received:', JSON.stringify(profile, null, 2)); // Added logging
     return done(null, profile); 
   }));
 }
@@ -140,8 +141,17 @@ router.get('/logout', (req, res, next) => {
  *                   example: false
  */
 router.get('/api/auth/status', (req, res) => {
+  console.log('[DEBUG] /api/auth/status: Request received.');
+  console.log('[DEBUG] /api/auth/status: req.isAuthenticated() ->', req.isAuthenticated());
+  // Avoid logging the entire session if it contains sensitive data or is very large
+  // Log specific parts or just confirmation
+  console.log('[DEBUG] /api/auth/status: req.sessionID ->', req.sessionID); 
+  console.log('[DEBUG] /api/auth/status: req.session.passport ->', JSON.stringify(req.session.passport, null, 2)); 
+  console.log('[DEBUG] /api/auth/status: req.user ->', JSON.stringify(req.user, null, 2)); 
+
   if (req.isAuthenticated()) {
     // User is logged in, send back relevant user info
+    console.log('[DEBUG] /api/auth/status: User IS authenticated. Sending user data.');
     res.json({
       loggedIn: true,
       user: {
