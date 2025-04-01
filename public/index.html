@@ -1,10 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe API</title>
 </head>
 <body>
     <h1>Welcome to Recipe API</h1>
-    <a href="/auth/github">Login with GitHub</a>
+
+    <div id="auth-status">
+        <!-- Content will be loaded by JavaScript -->
+        <p>Loading user status...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const authStatusDiv = document.getElementById('auth-status');
+
+            fetch('/api/user/me')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // User is logged in
+                    } else {
+                        // Assume not logged in if status is not OK (e.g., 401)
+                        throw new Error('Not authenticated'); 
+                    }
+                })
+                .then(data => {
+                    // User is logged in, display welcome message and logout link
+                    const username = data.username || 'User'; // Fallback if username isn't returned
+                    authStatusDiv.innerHTML = `
+                        <p>Welcome, ${username}! 
+                           <a href="/auth/logout">Logout</a>
+                        </p>
+                    `;
+                })
+                .catch(error => {
+                    // User is not logged in or an error occurred, display login link
+                    console.log('User not authenticated or fetch error:', error.message);
+                    authStatusDiv.innerHTML = '<a href="/auth/github">Login with GitHub</a>';
+                });
+        });
+    </script>
 </body>
 </html>
