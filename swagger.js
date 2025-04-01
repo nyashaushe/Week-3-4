@@ -13,7 +13,7 @@ const options = {
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
-          ? 'https://week-3-4-30dx.onrender.com/' // Replace with your production URL if different
+          ? 'https://week-3-4-30dx.onrender.com' // Replace with your production URL if different
           : `http://localhost:${process.env.PORT || 3000}`, // Use PORT from env or default to 3000
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
