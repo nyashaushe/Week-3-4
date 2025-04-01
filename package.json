@@ -4,8 +4,8 @@
   "description": "A RESTful API for managing recipes and ingredients",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "cross-env GITHUB_CLIENT_ID=Ov23liYJMIMTPIYRGB6u GITHUB_CLIENT_SECRET=1c376de19fa1c0e79640a80f784d76919cb27884 GITHUB_CALLBACK_URL=https://week-3-4-30dx.onrender.com/auth/github/callback nodemon server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [
     "recipe",
