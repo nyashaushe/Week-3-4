@@ -40,7 +40,7 @@
                     const displayName = data.user.displayName || data.user.username || 'User'; // Prefer display name, fallback to username
                     authStatusDiv.innerHTML = `
                         <p>Welcome, ${displayName}!
-                           <a href="/logout">Logout</a>  
+                           <a href="/auth/logout">Logout</a>  
                         </p>
                         <p><a href="/recipes.html">View Recipes</a></p> 
                     `;
