@@ -43,7 +43,7 @@ if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET || !proce
  *       302:
  *         description: Redirecting to GitHub for authentication.
  */
-router.get('/github', passport.authenticate('github')); // Corrected path (removed /auth prefix)
+router.get('/github', passport.authenticate('github', { prompt: 'consent' })); // Corrected path (removed /auth prefix)
 
 /**
  * @swagger
